@@ -1,22 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 
 const BookGrid = ({ books }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedAuthor, setSelectedAuthor] = useState({});
+  const [authorDetails, setAuthorDetails] = useState(null);
 
   const filteredBooks = books.filter(book => book.cover_i || book.author_name || book.title);
 
+  useEffect(() => {
+    const fetchAuthorDetails = async () => {
+      if (selectedAuthor.key) {
+        try {
+          const response = await fetch(`https://openlibrary.org/authors/${selectedAuthor.key}.json`);
+          const data = await response.json();
+          setAuthorDetails(data);
+        } catch (error) {
+          console.error('Error fetching author details:', error);
+        }
+      }
+    };
+
+    fetchAuthorDetails();
+  }, [selectedAuthor]);
+
   const handleAuthorClick = (book) => {
     setSelectedAuthor({
+      key: book.author_key,
       title: book.title,
       cover_i: book.cover_i,
-      author_name: book.author_name, 
+      author_name: book.author_name,
     });
     setShowModal(true);
   };
-  
-  
+
   return (
     <div className="book-grid">
       {filteredBooks.map((book) => (
@@ -28,7 +45,7 @@ const BookGrid = ({ books }) => {
           </p>
         </div>
       ))}
-      {showModal && <Modal book={selectedAuthor} onClose={() => setShowModal(false)} />}
+      {showModal && <Modal author={selectedAuthor} authorDetails={authorDetails} onClose={() => setShowModal(false)} />}
     </div>
   );
 };

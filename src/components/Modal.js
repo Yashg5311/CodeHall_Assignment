@@ -1,18 +1,35 @@
 import React from 'react';
-import './Modal.css'; 
-const Modal = ({ book, onClose }) => {
+import './Modal.css';
+
+const Modal = ({ author, authorDetails, onClose }) => {
   return (
     <div className='modal-overlay'>
       <div className='modal'>
         <button className='close-button' onClick={onClose}>X</button>
-        <h2>{book.title}</h2>
-        {book.cover_i && <img src={`https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`} alt="Book Cover" />}
-        <p>Author: {book.author_name}</p>
-        <p>This Book is written by {book.author_name}. Hope you enjoy reading it!</p>
-        
-      </div> 
+        <h2>{author.author_name}</h2>
+       
+        {authorDetails && (
+          <>
+            {authorDetails.photos && authorDetails.photos.length > 0 ? (
+              <img src={`https://covers.openlibrary.org/b/id/${authorDetails.photos[0]}-M.jpg`} alt="Author Cover" />
+            ) : (
+              <p>No photo available</p>
+            )}
+            {authorDetails.bio ? (
+              typeof authorDetails.bio === 'string' ? (
+                <p>{authorDetails.bio}</p>
+              ) : (
+                <p>{authorDetails.bio.value}</p>
+              )
+            ) : (
+              <p>No bio available</p>
+            )}
+            {/* Add more details as needed */}
+          </>
+        )}
+      </div>
     </div>
   );
-}
+};
 
 export default Modal;
